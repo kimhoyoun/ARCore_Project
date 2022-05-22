@@ -1,52 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:orientation="vertical">
 
-    <android.opengl.GLSurfaceView
-        android:id="@+id/glsurfaceview"
+    <me.relex.circleindicator.CircleIndicator
+        android:id="@+id/indicator"
+        app:ci_drawable="@drawable/white_radius"
+        app:ci_height="7dp"
+        app:ci_width="7dp"
+        app:ci_margin="4dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="48dp"
+        android:background="#393939"/>
 
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vpPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#393939"
+        android:layout_weight="1"/>
 
     <LinearLayout
-        android:id="@+id/btnLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:visibility="invisible">
-
-        <ImageButton
-            android:id="@+id/rotateBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:src="@drawable/rotate"
-            android:onClick="rotateBtnClick"
-            android:layout_marginRight="15dp"
-            />
-
-        <ImageButton
-            android:id="@+id/rotateStopBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:src="@drawable/rotatestop"
-            android:onClick="rotateBtnClick"
-            />
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:gravity="center"
+        android:background="#393939"
+        android:orientation="vertical">
 
         <Button
-            android:id="@+id/initBtn"
+            android:id="@+id/btn_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="처음으로"
-            android:onClick="rotateBtnClick"/>
-
-
+            android:text="시작하기" />
     </LinearLayout>
 
-
-</RelativeLayout>
+</LinearLayout>

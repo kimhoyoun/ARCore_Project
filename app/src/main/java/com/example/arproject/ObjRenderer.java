@@ -289,4 +289,55 @@ public class ObjRenderer {
 //        mColorCorrection[3] = colorCorrection[3];
 
     }
+    float [] myMinPoint;
+    float [] myMaxPoint;
+
+    float[][] getMinMaxPoint(){
+        calcMyMinMax();
+
+        float[] localMvMatrix = new float[16];
+        float[] localMvpMatrix = new float[16];
+
+        Matrix.multiplyMM(localMvMatrix, 0, mViewMatrix, 0, mModelMatrix,0);
+        Matrix.multiplyMM(localMvpMatrix, 0, mProjMatrix, 0, localMvMatrix,0);
+
+        float[] minPoint = new float[4];
+        Matrix.multiplyMV(minPoint, 0, mModelMatrix, 0,
+                new float[]{myMinPoint[0], myMinPoint[1], myMinPoint[2],1f},0);
+
+        float[] maxPoint = new float[4];
+        Matrix.multiplyMV(maxPoint, 0, mModelMatrix, 0,
+                new float[]{myMaxPoint[0], myMaxPoint[1], myMaxPoint[2],1f},0);
+
+        float[] res0 = new float[3];
+        res0[0] = Math.min(minPoint[0], maxPoint[0]);
+        res0[1] = Math.min(minPoint[1], maxPoint[1]);
+        res0[2] = Math.min(minPoint[2], maxPoint[2]);
+
+        float[] res1 = new float[3];
+        res1[0] = Math.max(minPoint[0], maxPoint[0]);
+        res1[1] = Math.max(minPoint[1], maxPoint[1]);
+        res1[2] = Math.max(minPoint[2], maxPoint[2]);
+
+        float[][] resAll = {res0, res1};
+
+        return resAll;
+    }
+
+    void calcMyMinMax(){
+        myMinPoint = new float[3];
+        myMaxPoint = new float[3];
+
+        float[] vertices = ObjData.getVerticesArray(mObj);
+
+        for(int i = 1; i<mObj.getNumVertices(); i++){
+            myMinPoint[0] = Math.min(myMinPoint[0], vertices[i+3+0]); // x
+            myMinPoint[1] = Math.min(myMinPoint[1], vertices[i+3+1]); // y
+            myMinPoint[2] = Math.min(myMinPoint[2], vertices[i+3+2]); // z
+
+            myMaxPoint[0] = Math.max(myMaxPoint[0], vertices[i+3+0]); // x
+            myMaxPoint[1] = Math.max(myMaxPoint[1], vertices[i+3+1]); // y
+            myMaxPoint[2] = Math.max(myMaxPoint[2], vertices[i+3+2]); // z
+        }
+    }
 }
