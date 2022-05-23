@@ -1,5 +1,6 @@
 package com.example.arproject;
 
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -34,20 +35,20 @@ public class Cube {
     private float[] mModelMatrix = new float[16];
     private float[] mViewMatrix = new float[16];
     private float[] mProjMatrix = new float[16];
-
+    boolean cubeinit = false;
     private FloatBuffer mVertices;
     private FloatBuffer mColors;
     private ShortBuffer mIndices;
 
     private float vertices[] = {
-            -0.7f, 0.0f, -0.7f,
-            0.7f, 0.0f, -0.7f,
-            0.7f, -2.50f, -0.7f,
-            -0.7f, -2.50f, -0.7f,
-            -0.7f, 0.0f,  0.7f,
-            0.7f, 0.0f,  0.7f,
-            0.7f, -2.5f,  0.7f,
-            -0.7f, -2.5f,  0.7f
+            -0.5f, 0.0f, -0.5f,
+            0.5f, 0.0f, -0.5f,
+            0.5f, 1.0f, -0.5f,
+            -0.5f, 1.0f, -0.5f,
+            -0.5f, 0.0f,  0.5f,
+            0.5f, 0.0f,  0.5f,
+            0.5f, 1.0f,  0.5f,
+            -0.5f, 1.0f,  0.5f
     };
     private short indices[] = {
             0, 5, 4, 0, 1, 5,
@@ -61,7 +62,7 @@ public class Cube {
     public static final int GREEN = 1;
     public static final int BLUE = 2;
     public static final int ALPHA = 3;
-    private float[] mColor = new float[]{0.0f, 0.0f, 0.0f, 0.0f};
+    private float[] mColor = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
 
     public Cube(float scale, float[] color, float alpha) {
         float[] scaledVertices = new float[3 * 8];
@@ -125,6 +126,8 @@ public class Cube {
         if (linked[0] == 0) {
             Log.e(TAG, "Could not link program.");
         }
+
+        cubeinit = true;
     }
 
     public void draw() {

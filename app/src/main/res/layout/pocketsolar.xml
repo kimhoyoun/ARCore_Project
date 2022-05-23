@@ -16,7 +16,7 @@
             android:id="@+id/glsurfaceview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <LinearLayout
             android:id="@+id/layout_info"
@@ -234,33 +234,6 @@
         </LinearLayout>
     </LinearLayout>
 
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
-        <TextView
-            android:id="@+id/state"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="hello"
-            android:textSize="20dp"
-            android:textColor="#ff0000"/>
-
-        <TextView
-            android:id="@+id/eventText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="toto"
-            android:layout_alignBottom="@+id/state"
-            android:textSize="20dp"
-            android:textColor="#ffff00"/>
-
-
-    </LinearLayout>
-
-
     <LinearLayout
         android:id="@+id/flagBtnLayout"
         android:layout_width="wrap_content"
@@ -287,7 +260,7 @@
             android:src="@drawable/android"
             android:background="@android:color/transparent"
             android:onClick="flagBtnClick"
-           />
+            />
 
         <ImageButton
             android:id="@+id/flagResetBtn"
@@ -297,7 +270,7 @@
             android:src="@drawable/reset"
             android:background="@android:color/transparent"
             android:onClick="flagBtnClick"
-        />
+            />
 
 
 
@@ -334,10 +307,7 @@
             android:layout_height="wrap_content"
             android:onClick="rotateBtnClick"
             android:text="블랙홀" />
-
-
     </LinearLayout>
-
 
 
     <TextView
@@ -347,11 +317,12 @@
         android:text="eeeeee"
         android:textSize="15dp"
         android:textColor="@color/black"
-        android:background="#eeeeee"
+        android:background="@drawable/outline"
+        android:padding="5dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"
-        android:layout_marginRight="50dp"/>
+        android:layout_marginBottom="100dp"
+        android:layout_marginRight="80dp"/>
 
 
 </RelativeLayout>

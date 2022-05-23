@@ -21,13 +21,11 @@ public class MainRenderer implements GLSurfaceView.Renderer {
     int mViewportWidth, mViewportHeight;
     RenderCallback mRenderCallback;
 
-    ObjRenderer andy;
+    ObjRenderer pika;
 
     ObjRenderer sun, blackhole;
 
     Planet mercury, venus, earth, moon, mars, jupiter, saturn, neptune, uranus;
-
-    Cube mCube;
 
     ObjRenderer mflag, mflag2;
     // 깃발
@@ -37,9 +35,12 @@ public class MainRenderer implements GLSurfaceView.Renderer {
     boolean isImgFind = false;
     boolean planetDraw = false;
     boolean moonDraw = false;
-    boolean flagDraw = false;
+//    boolean flagDraw = false;
+    boolean firstFlag = false;
+    boolean secondFlag = false;
     boolean blackholeDraw = false;
     boolean lineDraw = false;
+    boolean cubeDraw = false;
 
     String [] info_mercury = { "수성", "4879.4 km", "7.5 × 10^7 km²", "3.023 × 10^23 ㎏", "0.0352°", "87.9691일", "58.646일", "섭씨 427도", "섭씨 -193도", " 10^−14Mpa", "없음"};
     String [] info_venus = new String[]{ "금성", "12,103.7 km", "4.8 × 10^7 km²", "4.8685×10^24 kg", "177.3°", "224.7일", "243.0158일", "500°C", "467°C", "9.3 Mpa", "없음"};
@@ -59,9 +60,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
     MainRenderer(Context context, RenderCallback callback){
         mRenderCallback = callback;
         mCamera = new CameraPreView();
-        mCube = new Cube(0.3f, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, 0.0f);
 
-        andy = new ObjRenderer(context, "andy2.obj", "andy.png");
+        pika = new ObjRenderer(context, "pika_modified.obj", "pika.png");
 
         // 행성
         sun = new ObjRenderer(context, "sun.obj", "sun.png");
@@ -108,8 +108,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(1.0f,1.0f, 0.0f, 0.0f);
 
         mCamera.init();
-        andy.init();
-        mCube.init();
+        pika.init();
         sun.init();
         moon.init();
         blackhole.init();
@@ -144,15 +143,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
         GLES20.glDepthMask(true);
         if(isImgFind){
 
-//            for (Line currPath : mPaths) {
-//                if (currPath != null) {
-//                    if (!currPath.isInited) {
-//                        currPath.init();
-//                    }
-//                    currPath.update();
-//                    currPath.draw();
-//                }
-//            }
+            sun.draw();
+
             if(blackholeDraw){
                 blackhole.draw();
             }
@@ -172,58 +164,36 @@ public class MainRenderer implements GLSurfaceView.Renderer {
                 if(moonDraw) {
                     moon.draw();
                 }
-            }else{
-                mCube.draw();
             }
-            sun.draw();
 
-
-            if(flagDraw) {
+            if(firstFlag){
                 mflag.draw();
+            }
+            if(secondFlag) {
                 mflag2.draw();
             }
         }
 
-        andy.draw();
+
+        pika.draw();
     }
 
     void addPoint(float x, float y, float z) {
 
-        if (!mPaths.isEmpty()) {
-            Line currPath = mPaths.get(mPaths.size() - 1);
-            currPath.updatePoint(x, y, z);
-        }
-    }
-
-    void addPoint2(float x, float y, float z) {
-
-       line.updatePoint(x,y,z);
+        line.updatePoint(x,y,z);
     }
 
     float[] lineMatrix = new float[16];
 
-    void addLine(float x, float y, float z, float[] lineModelMatrix) {
-
-        Line currPath = new Line();
-        currPath.updateProjMatrix(lineMatrix);
-
-//        Matrix.setIdentityM(lineModelMatrix, 0);
-//        Matrix.translateM(lineModelMatrix, 0, x, y, z);
-
-        currPath.setmModelMatrix(lineModelMatrix);
-        mPaths.add(currPath);
-    }
-
     void addLine(float x, float y, float z) {
 
-
+        line.updateProjMatrix(lineMatrix);
 
         float[] matrix = new float[16];
         Matrix.setIdentityM(matrix,0);
         Matrix.translateM(matrix, 0, x,y,z);
 
         line.setmModelMatrix(matrix);
-//        mPaths.add(currPath);
     }
 
     void updateSession(Session session, int displayRotation){
@@ -235,13 +205,12 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
     void setProjectionMatrix(float[] matrix){
         System.arraycopy(matrix, 0, lineMatrix, 0, 16);
-        mCube.setProjectionMatrix(matrix);
         sun.setProjectionMatrix(matrix);
         blackhole.setProjectionMatrix(matrix);
         moon.setProjectionMatrix(matrix);
-        andy.setProjectionMatrix(matrix);
-
+        pika.setProjectionMatrix(matrix);
         line.updateProjMatrix(matrix);
+
 
         for(ObjRenderer obj : planetList){
             obj.setProjectionMatrix(matrix);
@@ -253,11 +222,10 @@ public class MainRenderer implements GLSurfaceView.Renderer {
     }
 
     void updateViewMatrix(float[] matrix){
-        mCube.setViewMatrix(matrix);
         sun.setViewMatrix(matrix);
         blackhole.setViewMatrix(matrix);
         moon.setViewMatrix(matrix);
-        andy.setViewMatrix(matrix);
+        pika.setViewMatrix(matrix);
 
         if(line != null){
             line.updateViewMatrix(matrix);

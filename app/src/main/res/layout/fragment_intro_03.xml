@@ -5,99 +5,10 @@
     android:orientation="vertical"
     android:gravity="center">
 
-
-
-    <LinearLayout
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/onebin"
-                android:layout_weight="2">
-            </ImageView>
-            <TextView
-                android:id="@+id/info_member_01"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textColor="@color/white"
-                android:padding="20px"
-                android:layout_weight="1">
-            </TextView>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/onebin"
-                android:layout_weight="2">
-            </ImageView>
-            <TextView
-                android:id="@+id/info_member_02"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textColor="@color/white"
-                android:padding="20px"
-                android:layout_weight="1">
-            </TextView>
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/onebin"
-                android:layout_weight="2">
-            </ImageView>
-            <TextView
-                android:id="@+id/info_member_03"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textColor="@color/white"
-                android:padding="20px"
-                android:layout_weight="1">
-            </TextView>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/onebin"
-                android:layout_weight="2">
-            </ImageView>
-            <TextView
-                android:id="@+id/info_member_04"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textColor="@color/white"
-                android:padding="20px"
-                android:layout_weight="1">
-            </TextView>
-        </LinearLayout>
-    </LinearLayout>
-
-
+        android:src="@drawable/intro_03"
+        />
 
 </LinearLayout>

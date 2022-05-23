@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -73,13 +74,13 @@ public class PocketSolar extends AppCompatActivity {
     boolean mUserRequestedInstall = true;
     LinearLayout btnLayout;
     LinearLayout flagBtnLayout;
-    TextView text1, text2, comment;
+    TextView comment;
 
     float[] mePos = new float[3];
 
     //////////////////////////////////////////////////////////////////////////////////////
-    float[] firstPlanetCenter;
-    float[] secondPlanetCenter;
+    float[] firstPlanetCenter = new float[4];
+    float[] secondPlanetCenter = new float[4];
     ImageButton pengBtn, andyBtn;
 
     boolean isModelInit = false, mCatched = false;
@@ -118,8 +119,6 @@ public class PocketSolar extends AppCompatActivity {
 
         flagBtnLayout = findViewById(R.id.flagBtnLayout);
 
-        text1 = findViewById(R.id.state);
-        text2 = findViewById(R.id.eventText);
         comment = findViewById(R.id.comment);
 
         layout_info = (LinearLayout) findViewById(R.id.layout_info);
@@ -147,7 +146,6 @@ public class PocketSolar extends AppCompatActivity {
             public void onClick(View view) {
                 layout_info.setVisibility(View.GONE);
                 state = prevState;
-
                 if(state.equals(PLANET_MOVE_ON)){
                     rotateFlag = true;
                     rotateThreadOn();
@@ -158,8 +156,6 @@ public class PocketSolar extends AppCompatActivity {
         mGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public void onLongPress(MotionEvent event) {
-
-                Log.d("롱터치","두둥");
                 mCatchX = event.getX();
                 mCatchY = event.getY();
 
@@ -171,10 +167,8 @@ public class PocketSolar extends AppCompatActivity {
             // 더블 터치를 통한 오른쪽 화면에 정보 레이아웃 생성
             @Override
             public boolean onDoubleTap(MotionEvent event) {
-
                 mCatchX = event.getX();
                 mCatchY = event.getY();
-                Log.d("따블 클릭", "오케이!");
 
                 doubleTap = true;
                 mCatched = true;
@@ -237,7 +231,7 @@ public class PocketSolar extends AppCompatActivity {
                 mRenderer.setProjectionMatrix(projMatrix);
                 mRenderer.updateViewMatrix(viewMatrix);
 
-                mRenderer.andy.setViewMatrix(viewMatrix);
+                mRenderer.pika.setViewMatrix(viewMatrix);
 
                 mePos = calculateInitialMePoint(
                         mRenderer.mViewportWidth,
@@ -247,13 +241,11 @@ public class PocketSolar extends AppCompatActivity {
                 );
 
                 float[] modelMatrix = new float[16];
-                // matrix 초기화
                 Matrix.setIdentityM(modelMatrix, 0);
                 Matrix.translateM(modelMatrix,0, mePos[0], mePos[1], mePos[2]);
                 Matrix.scaleM(modelMatrix,0, 0.2f, 0.2f, 0.2f);
-                mRenderer.andy.setModelMatrix(modelMatrix);
+                mRenderer.pika.setModelMatrix(modelMatrix);
 
-                // 이미지추적결과에 따른 그리기 설정
                 if(!drawTag) {
                     drawImage(frame);
                 }
@@ -288,7 +280,6 @@ public class PocketSolar extends AppCompatActivity {
                                             txt_satellite.setText(info_satellite);
                                             layout_info.setVisibility(View.VISIBLE);
                                             // 정보 설정
-                                            text2.setText("정보보기");
                                         }
                                     });
                                     break;
@@ -309,20 +300,18 @@ public class PocketSolar extends AppCompatActivity {
                                     prevState = state;
                                     state = PLANET_DISTANCE_ONE;
                                     mCatched = false;
-                                    mRenderer.flagDraw =true;
+                                    mRenderer.firstFlag =true;
                                     rotateFlag = false;
                                     messageFlag = true;
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             flagBtnLayout.setVisibility(View.VISIBLE);
-                                            text2.setText("1번 플래그 뜸");
                                         }
                                     });
                                     break;
                                 }
                             }
-                            longTouch = false;
                         } else if (state.equals(PLANET_DISTANCE_ONE)){
                             for (HitResult result : results) {
                                 Pose pose = result.getHitPose();
@@ -333,27 +322,15 @@ public class PocketSolar extends AppCompatActivity {
                                     lineDraw();
 
                                     state = PLANET_DISTANCE_INFO;
+                                    mRenderer.secondFlag =true;
                                     mCatched = false;
                                     messageFlag = true;
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            text2.setText("2번 플래그 뜸");
-                                        }
-                                    });
                                     break;
                                 }
                             }
-                            longTouch = false;
-                        }else{
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    text2.setText("어림없지");
-                                }
-                            });
-                            longTouch = false;
                         }
+
+                        longTouch = false;
                     }
                 }
 
@@ -361,26 +338,7 @@ public class PocketSolar extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        text1.setText(state);
-                        Log.d("플래그",messageFlag+", " + messageCount);
-//                        while(messageFlag){
-//                            Log.d("플래그 while문",state);
-//                            comment.setText(getCommentMessage(state));
-//                            comment.setVisibility(View.VISIBLE);
-//
-//                            messageCount++;
-//
-//                            if(messageCount == 15){
-//                                Log.d("플래그 if문",state);
-//                                messageFlag = false;
-//                                comment.setVisibility(View.INVISIBLE);
-//                                messageCount = 0;
-//                            }
-//                            SystemClock.sleep(100);
-//                        }
-
                         comment.setText(getCommentMessage(state));
-
                         if(state.equals(RISING_SUN)){
                             btnLayout.setVisibility(View.VISIBLE);
                         }
@@ -404,7 +362,7 @@ public class PocketSolar extends AppCompatActivity {
         String res = "";
         switch (state){
             case INIT:
-                res = "안녕! 난 안디라고해! \n 그림을 비추면 멋잇는 태양계가 나타날거야!";
+                res = "안녕! 난 피카츄라고해! \n 카메라에 그림을 비추면 \n태양계가 나타날거야!";
                 break;
 
             case IMAGE_SCAN:
@@ -416,8 +374,8 @@ public class PocketSolar extends AppCompatActivity {
                 break;
 
             case PLANET_MOVE_OFF:
-                res = "행성들이 멈춰있네?\n" +
-                        "시작 버튼을 누르면 행성이 움직일거야!";
+                res = "지금은 행성들이 움직이지 않아..\n" +
+                        "시작을 눌러보면 행성이 움직일거야!";
                 break;
 
             case PLANET_MOVE_ON:
@@ -436,7 +394,7 @@ public class PocketSolar extends AppCompatActivity {
                 break;
 
             case PLANET_REMOVE:
-                res = "블랙홀이 태양계를 집어삼키고 있어!!!!!";
+                res = "블랙홀이 태양계를 집어삼키고 있어!!!!!\n다음에 또 만나!";
 
         }
 
@@ -445,32 +403,11 @@ public class PocketSolar extends AppCompatActivity {
 
     void lineDraw(){
         mRenderer.lineDraw = true;
-        mRenderer.addLine(firstPlanetCenter[0],firstPlanetCenter[1],firstPlanetCenter[2], lineModelMatrix);
 
         mRenderer.addLine(firstPlanetCenter[0],firstPlanetCenter[1],firstPlanetCenter[2]);
+        mRenderer.addPoint(firstPlanetCenter[0],firstPlanetCenter[1],firstPlanetCenter[2]);
+        mRenderer.addPoint(secondPlanetCenter[0],secondPlanetCenter[1],secondPlanetCenter[2]);
 
-
-        mRenderer.addPoint2(firstPlanetCenter[0],firstPlanetCenter[1],firstPlanetCenter[2]);
-        mRenderer.addPoint2(secondPlanetCenter[0],secondPlanetCenter[1],secondPlanetCenter[2]);
-//        int a = 10;
-//        float dx = (secondPlanetCenter[0]-firstPlanetCenter[0])/a;
-//        float dy = (secondPlanetCenter[1]-firstPlanetCenter[1])/a;
-//        float dz = (secondPlanetCenter[2]-firstPlanetCenter[2])/a;
-//
-//        Log.d("선 생성 >>>>>>> " ,"x증감 : " + dx + " y증감 : " + dy + " z증감 : " + dz);
-//
-//        float fx = firstPlanetCenter[0];
-//        float fy = firstPlanetCenter[1];
-//        float fz = firstPlanetCenter[2];
-//
-//        for (int i = 0; i<=a; i++){
-//            Log.d("선 생성 ", i +"번째 ==> " + "x : " + fx + " y : " + fy + " z : " + fz);
-//            mRenderer.addPoint(fx,fy,fz);
-//            mRenderer.addPoint2(fx,fy,fz);
-//            fx += dx;
-//            fy += dy;
-//            fz += dz;
-//        }
     }
 
     @Override
@@ -497,7 +434,6 @@ public class PocketSolar extends AppCompatActivity {
         mConfig = new Config(mSession);
 
         mConfig.setFocusMode(Config.FocusMode.AUTO);
-        // 이미지데이터베이스 설정
         setUpImgDB(mConfig);
 
         mSession.configure(mConfig);
@@ -507,21 +443,17 @@ public class PocketSolar extends AppCompatActivity {
         } catch (CameraNotAvailableException e) {
             e.printStackTrace();
         }
+        mRenderer.isImgFind = false;
         mSurfaceView.onResume();
         mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 
-    // 이미지데이터베이스 설정
     void setUpImgDB(Config config){
-        // 이미지 데이터베이스 생성
         AugmentedImageDatabase imageDatabase = new AugmentedImageDatabase(mSession);
 
         try {
-            // 파일스트림로드
             InputStream is = getAssets().open("solarsystem.png");
-            // 파일스트림에서 Bitmap 생성
             Bitmap bitmap = BitmapFactory.decodeStream(is);
-            // 이미지데이터베이스에 bitmap 추가
             imageDatabase.addImage("태양계",bitmap);
 
             is.close();
@@ -534,18 +466,14 @@ public class PocketSolar extends AppCompatActivity {
 
     float[] sunMatrix = new float[16];
     float[] imageMatrix = new float[16];
-    // 이미지추적결과에 따른 그리기 설정
     void drawImage(Frame frame){
 
-        mRenderer.isImgFind = false;
-        // frame(카메라) 에서 찾은 이미지들을 Collection으로 받아온다.
         Collection<AugmentedImage> updatedAugmentedImages =
                 frame.getUpdatedTrackables(AugmentedImage.class);
 
-        // 찾은 이미지들을 돌린다.
         for (AugmentedImage img : updatedAugmentedImages) {
             if (img.getTrackingState() == TrackingState.TRACKING) {
-                mRenderer.isImgFind = true;
+
                 state = IMAGE_SCAN;
                 messageFlag = true;
                 Pose imgPose = img.getCenterPose();
@@ -555,8 +483,10 @@ public class PocketSolar extends AppCompatActivity {
 
                 System.arraycopy(matrix, 0, imageMatrix, 0 ,16);
 
-                mRenderer.mCube.setModelMatrix(imageMatrix);
                 moveObj(matrix);
+
+                mRenderer.isImgFind = true;
+                mRenderer.cubeDraw = true;
                 drawTag = true;
 
                 switch (img.getTrackingMethod()) {
@@ -581,7 +511,6 @@ public class PocketSolar extends AppCompatActivity {
         System.arraycopy(matrix, 0, sunMatrix, 0, 16);
         Matrix.translateM(sunMatrix, 0, 0f, -0.7f, 0f);
 
-        Log.d("sunMatrix 처음", Arrays.toString(sunMatrix));
         new Thread() {
             @Override
             public void run() {
@@ -594,6 +523,7 @@ public class PocketSolar extends AppCompatActivity {
                         SystemClock.sleep(100);
                     }else if( currentTime == 100){
                         mRenderer.planetDraw = true;
+                        mRenderer.cubeDraw = false;
                         state = RISING_SUN;
                         messageFlag = true;
                     }
@@ -627,7 +557,6 @@ public class PocketSolar extends AppCompatActivity {
         super.onPause();
         mSurfaceView.onPause();
         mSession.pause();
-
     }
 
     void hideStatusBarAndTitleBar(){
@@ -676,24 +605,25 @@ public class PocketSolar extends AppCompatActivity {
             float[][] resAll = planet.getMinMaxPoint();
             float[] minPoint = resAll[0];
             float[] maxPoint = resAll[1];
+            float[] centerPoint = resAll[2];
 
-            if (x >= minPoint[0] - 0.2f && x <= maxPoint[0] + 0.2f &&
-                    y >= minPoint[1] - 0.1f && y <= maxPoint[1] + 0.1f &&
-                    z >= minPoint[2] - 0.1f && z <= maxPoint[2] + 0.1f) {
+            if (x >= minPoint[0] - 0.3f && x <= maxPoint[0] + 0.3f &&
+                    y >= minPoint[1] - 0.3f && y <= maxPoint[1] + 0.3f &&
+                    z >= minPoint[2] - 0.3f && z <= maxPoint[2] + 0.3f) {
                 if(event.equals("longTouch")){
                     if (state.equals(PLANET_MOVE_OFF) || state.equals(PLANET_MOVE_ON)) {
                         firstPlanet = planet;
-                        firstPlanetCenter = objCentCoord(maxPoint, minPoint);
+                        firstPlanetCenter = centerPoint;
 
                         System.arraycopy(planet.myMatrix, 0, firstFlagMatrix, 0, 16);
                         Matrix.translateM(firstFlagMatrix, 0, 0f, 0.15f, 0f);
+
                         System.arraycopy(planet.myMatrix, 0, lineModelMatrix, 0, 16);
                         return true;
                     } else if (state.equals(PLANET_DISTANCE_ONE)) {
                         if (!planet.name.equals(firstPlanet.name)) {
                             secondPlanet = planet;
-                            secondPlanetCenter = objCentCoord(maxPoint, minPoint);
-
+                            secondPlanetCenter = centerPoint;
                             System.arraycopy(planet.myMatrix, 0, secondFlagMatrix, 0, 16);
 
                             Matrix.translateM(secondFlagMatrix, 0, 0f, 0.15f, 0f);
@@ -720,16 +650,6 @@ public class PocketSolar extends AppCompatActivity {
             }
         }
         return false;
-    }
-
-    float[] objCentCoord(float[] maxPoint, float[] minPoint){
-
-        float rdsX = ((maxPoint[0]+minPoint[0])/2);
-        float rdsY = ((maxPoint[1]+minPoint[1])/2);
-        float rdsZ = ((maxPoint[2]+minPoint[2])/2);
-
-        float[] res = new float[]{rdsX, rdsY, rdsZ};
-        return res;
     }
 
     boolean rotateFlag = false;
@@ -816,7 +736,7 @@ public class PocketSolar extends AppCompatActivity {
     }
 
     float[] blackHoleMatrix = new float[16];
-
+    boolean init = false;
     public void rotateBtnClick(View view) {
 
         if (view.getId() == R.id.rotateBtn) {
@@ -829,9 +749,11 @@ public class PocketSolar extends AppCompatActivity {
         }
 
         else if(view.getId() == R.id.rotateStopBtn) {
-            rotateFlag = false;
-            state = PLANET_MOVE_OFF;
-            messageFlag = true;
+            if(state.equals(PLANET_MOVE_ON)) {
+                rotateFlag = false;
+                state = PLANET_MOVE_OFF;
+                messageFlag = true;
+            }
         }
 
         else if(view.getId() == R.id.initBtn) {
@@ -870,13 +792,23 @@ public class PocketSolar extends AppCompatActivity {
                                 mRenderer.blackholeDraw = false;
                                 blackHoleFlag = false;
                                 messageFlag = true;
+                                init = true;
+
+                                finish();//인텐트 종료
+                                overridePendingTransition(0, 0);//인텐트 효과 없애기
+                                Intent intent = getIntent(); //인텐트
+                                startActivity(intent); //액티비티 열기
+                                overridePendingTransition(0, 0);//인텐트 효과 없애기
                             }
+
                             Matrix.rotateM(blackHoleMatrix,0,4,0,1f,0);
                             mRenderer.blackhole.setModelMatrix(blackHoleMatrix);
                             currentTime++;
                         }
                     }
                 }.start();
+
+
             }
         }
     }
@@ -902,7 +834,8 @@ public class PocketSolar extends AppCompatActivity {
         else if(view.getId() == R.id.flagResetBtn){
             if(state.equals(PLANET_DISTANCE_ONE)||state.equals(PLANET_DISTANCE_INFO)){
                 state = prevState;
-                mRenderer.flagDraw = false;
+                mRenderer.firstFlag = false;
+                mRenderer.secondFlag = false;
                 firstFlagMatrix = new float[16];
                 secondFlagMatrix = new float[16];
                 lineModelMatrix = new float[16];
